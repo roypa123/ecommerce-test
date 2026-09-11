@@ -24,7 +24,7 @@ def get_category(
 
 def get_top_level_categories(
     db: Session,
-) -> list[Category]
+) -> list[Category]:
 
     return db.query(Category).filter(Category.parent_id.is_(None)).all()
 
