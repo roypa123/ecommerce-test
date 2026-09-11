@@ -25,4 +25,13 @@ s3_client = boto3.client(
 
 def upload_image(file: UploadFile, folder: str) -> str:
     extension = file.filename.rsplit(".",1)[-1] if "." in file.filename else "bin"
-    
+    object_key = f"{folder}/{uuid.uuid4()}.{extension}"
+
+    s3_client.upload_fileobj(
+        file.file,
+        MINIO_BUCKET,
+        object_key,
+        ExtraArgs={"ContentType": file.content_type},
+    )
+
+    return f"{MINIO_PUBLIC_URL}/{MINIO_BUCKET}/{object_key}"
