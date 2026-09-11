@@ -21,6 +21,13 @@ def create_user(
 
     return user
 
+def get_user_by_email(
+    db: Session,
+    email: str
+) -> User | None:
+
+    return db.query(User.email == email).first()
+
 
 def get_user(
     db: Session,
