@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
+from app.core.security import create_access_token, create_refresh_token
 from app.database import get_db
-from app.schemas.user import UserCreate, UserResponse
+from app.schemas.user import Token,UserCreate, UserResponse
 from app.services.user import create_user, get_user
 
 
@@ -12,14 +13,23 @@ router = APIRouter(
 )
 
 @router.post(
-    "/",
-    response_model=UserResponse
+    "/signup",
+    response_model=Token
 )
-def create(
+def signup(
     user_data: UserCreate,
     db: Session = Depends(get_db)
 ):
-    return create_user(db, user_data)
+    user = create_user(db, user_data)
+    access_token = create_access_token({"sub": str(user.id)})
+    refresh_token = create_refresh_token({"sub": str(user.id)})
+    return Token(access_token, refresh_token=refresh_token)
+
+
+
+
+
+        
 
 @router.get(
     "/{user_id}",
