@@ -26,7 +26,7 @@ def get_user_by_email(
     email: str
 ) -> User | None:
 
-    return db.query(User.email == email).first()
+    return db.query(User).filter(User.email == email).first()
 
 
 def get_user(
