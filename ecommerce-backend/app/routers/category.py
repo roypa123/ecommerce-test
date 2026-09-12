@@ -5,9 +5,10 @@ from fastapi import APIRouter,Depends, File, HTTPException, UploadFile, Form
 from sqlalchemy.orm import Session
 from typing import Optional
 
-
+from app.core.deps import get_current_user
 from app.core.storage import upload_image
 from app.database import get_db
+from app.models.user import User
 from app.schemas.category import CategoryCreate, CategoryResponse
 from app.services.category import create_category, get_category, get_top_level_categories, set_category_image
 
@@ -24,7 +25,8 @@ def create(
     name: str = Form(...),
     parent_id: Optional[int] = Form(None),
     file: Optional[UploadFile] = File(None),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     if parent_id is not None:
         parent = get_category(db, parent_id)
