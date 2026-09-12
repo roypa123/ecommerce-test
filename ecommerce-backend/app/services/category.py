@@ -5,14 +5,25 @@ from app.schemas.category import CategoryCreate
 
 def create_category(
     db: Session,
-    category_data: CategoryCreate
+    category_data: CategoryCreate,
+    image_url: str | None = None
 ) -> Category:
 
 
     category = Category(
         name=category_data.name,
-        parent_id=category_data.parent_id
+        parent_id=category_data.parent_id,
+        image_url=image_url,
     )
+
+    db.add(category)
+    db.commit()
+    db.refresh(category)
+
+    return category
+
+
+
 
 def get_category(
     db: Session,
