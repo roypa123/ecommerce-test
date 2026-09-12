@@ -1,8 +1,9 @@
 
 
 
-from fastapi import APIRouter,Depends, File, HTTPException, UploadFile
+from fastapi import APIRouter,Depends, File, HTTPException, UploadFile, Form
 from sqlalchemy.orm import Session
+from typing import Optional
 
 
 from app.core.storage import upload_image
@@ -20,18 +21,22 @@ router = APIRouter(
     response_model=CategoryResponse
 )
 def create(
-    category_data: CategoryCreate,
+    name: str = Form(...),
+    parent_id: Optional[int] = Form(None),
+    file: Optional[UploadFile] = File(None),
     db: Session = Depends(get_db)
 ):
-    if category_data.parent_id is not None:
-        parent = get_category(db, category_data.parent_id)
+    if parent_id is not None:
+        parent = get_category(db, parent_id)
         if parent is None:
             raise HTTPException(
                 status_code=404,
                 detail="Parent category not found"
             )
+    image_url = upload_image(file, folder="categories") if file else None
 
-    return create_category(db, category_data)
+    category_data = CategoryCreate(name=name, parent_id=parent_id)
+    return create_category(db, category_data, image_url)
 
 @router.get(
     "/",
