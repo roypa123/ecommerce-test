@@ -45,7 +45,8 @@ def create(
     response_model=list[CategoryResponse]
 )
 def list_categories(
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
 ):
     return get_top_level_categories(db)
 
@@ -56,7 +57,8 @@ def list_categories(
 )
 def get(
     category_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 
 ):
     category = get_category(db, category_id)
@@ -76,7 +78,8 @@ def get(
 def upload_category_image(
     category_id: int,
     file: UploadFile = File(...),
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     category = get_category(db, category_id)
 
